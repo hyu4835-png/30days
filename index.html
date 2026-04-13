@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pixel Mystery Event</title>
+    <title>30일의 공백으로부터</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React & Babel CDN -->
@@ -18,7 +18,7 @@
         @font-face {
             font-family: 'CleanDot';
             src: local('Pretendard'), local('Apple SD Gothic Neo'), local('Malgun Gothic'), local('sans-serif');
-            unicode-range: U+002E, U+002C; /* 온점(.)과 쉼표(,) 가독성 개선 */
+            unicode-range: U+002E, U+002C;
         }
 
         body {
@@ -30,29 +30,29 @@
         }
 
         .pixel-border {
-            border: 1px solid white;
-            box-shadow: 0 -1px 0 0 black, 0 1px 0 0 black, -1px 0 0 0 black, 1px 0 0 0 black;
+            border: 2px solid white;
+            box-shadow: 0 -2px 0 0 black, 0 2px 0 0 black, -2px 0 0 0 black, 2px 0 0 0 black;
         }
 
         .pixel-btn {
             position: relative;
             display: inline-block;
-            padding: 10px 20px;
+            padding: 15px 30px;
             background: #fff;
             color: #000;
-            border: 1px solid #000;
+            border: 2px solid #000;
             transition: all 0.1s;
             cursor: pointer;
         }
 
         .pixel-btn:active {
-            transform: translate(1px, 1px);
+            transform: translate(2px, 2px);
             background: #ddd;
         }
 
         .dialogue-box {
             background: rgba(0, 0, 0, 0.9);
-            border: 1px solid white;
+            border: 2px solid white;
             box-shadow: inset -1px -1px 0 0 #555;
         }
 
@@ -65,11 +65,12 @@
         }
         .map-active-node { animation: mapNodePulse 1.5s infinite; }
 
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 9px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #111; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #fff; border: 1px solid #111; }
 
-        .fade-in { animation: fadeIn 0.8s ease-in-out forwards; }
+        /* 화면 전환용 부드러운 페이드 효과만 남겨둠 */
+        .fade-in-screen { animation: fadeIn 0.8s ease-in-out forwards; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
@@ -79,11 +80,10 @@
     <script type="text/babel">
         const { useState, useEffect, useRef, useMemo } = React;
 
-        // --- Lucide Icon Wrapper for CDN ---
-        const Icon = ({ name, size = 24, className = "" }) => {
+        const Icon = ({ name, size = 36, className = "" }) => {
             const iconRef = useRef(null);
             useEffect(() => {
-                if (iconRef.current) {
+                if (iconRef.current && lucide) {
                     lucide.createIcons({
                         attrs: {
                             stroke: "currentColor",
@@ -99,7 +99,6 @@
             return <i data-lucide={name} style={{ width: size, height: size }} className={className} ref={iconRef}></i>;
         };
 
-        // --- Constants & Audio Assets ---
         const AUDIO_ASSETS = {
             BGM_SCENE_1: "https://image2url.com/r2/default/audio/1773985169389-4bd68b4f-6614-4e6b-bc8a-5ae02a057cf3.mp3",
             BGM_SCENE_2: "https://image2url.com/r2/default/audio/1773989596205-d606e15f-21be-46a7-8758-5899e98e6d85.mp3",
@@ -140,7 +139,7 @@
             { id: 2, scene: 1, subSceneIdx: 1, name: "먹다 남은 음식", description: "장례식장에서 제공되는 음식치고는 꽤 고급인 식재료로 만든 태가 나지만, 입을 댄 흔적 하나 없는 도시락이다. 옆에는 다 식은 녹차가 놓여있다. 잔잔한 녹차 표면에 흐릿한 모양으로 얼굴이 비친다. 무슨 표정인지 전혀 종잡을 수가 없어 눈을 떼고, 다시 뚜껑을 덮었다. 다시 열어볼 일이 없을 것 같다. ", image: "https://i.ibb.co/N62h4PtF/2.png", pos: { top: '50%', left: '70%' }, dialogues: ["테이블 위는 일회용품과 흘린 음식들로 흐트러져 있다.", "아마 치우려면 품이 꽤 많이 들 것이다."] },
             { id: 3, scene: 1, subSceneIdx: 2, name: "두고 온 물건", description: "먼 과거로부터 온 물건. 옥과 귀한 돌, 자개가 쓰인 것 같지만 지금에 와서도 정확히 무엇으로 이루어져 있는지는 잘 모른다. 돌과 키스톤 부분의 생채기가 자세히 보려 들지 않아도 보인다. 그의 것치고는 사용감이 꽤 느껴진다는 감상이다. 국화가 사자의 생기를 흡수한다는 건 아마 진실일 것이라는 생각이 언뜻 들었다. 그렇지 않으면 그렇게 빛나던 이 팔찌가 이렇게 고요할 리 없다.", image: "https://i.ibb.co/FkbRgBkR/3.jpg", pos: { top: '60%', left: '40%' }, dialogues: ["이것을 찾으러 왔었다.", "이런 것을 잊을 뻔하다니.", "잃어버리지 않게 넣어두자, 고 생각하던 찰나 그런 생각이 들었다.", "이제 누구의 것도 되지 못하는 물건인데.", "잃어버리지 않는다고 해도...."] },
             { id: 4, scene: 2, subSceneIdx: 0, name: "냉장고", description: "선물받은 나무열매들의 중심부에 하얗고 파란 곰팡이들이 피어있다. 남은 반찬과 밥을 담아둔 통을 꺼내보면 그곳에도 마찬가지로 곰팡이들은 피어있다. 가장 위에 있는 플라스틱 통을 꺼내 열어보았다. 반쯤 먹은 밥이 들어있다. 더 먹을 사람도 없는 김에 전부 버리기로 했다. 냉장고는 이내 깨끗해진다. 퀴퀴한 곰팡이 냄새만이 감돌았던 것도, 문을 닫아버리면 금세 지워진다.", image: "https://i.ibb.co/Kx69bFDx/4.jpg", pos: { top: '35%', left: '90%' }, dialogues: ["가까이 다가가 손잡이를 잡자마자 묘한 냄새가 풍기기 시작한다.", "그럴 법도 하다.", "아마 손대지 않은 음식들이 썩어가고 있을 것이다.", "문을 열었다."] },
-            { id: 5, scene: 2, subSceneIdx: 0, name: "테이블", description: "그 일이 일어나기 며칠 전에도 그는 병원에 입원을 했다. 사유는 언제나와 비슷했다. 약간 마른 그를 업고 집에 돌아왔던 기억이 있다. 특별할 것 없는 기억이다. 몇 번이고 그러하였으니. 그는 자신이 없는 날이면 집에서 홀로 무엇을 하고 있었던 걸까. 물어봐도 제대로 대답해주지 않으니 여태 알게 된 일은 없었다. 기다리는 사람 같은 건 없었을 텐데. ", image: "https://i.ibb.co/gF7S4pgF/5.jpg", pos: { top: '50%', left: '80%' }, dialogues: ["먼지가 앉은 테이블 위는 약간 희끄무레하다.", "쌓여있는 서류들에 눈길이 간다.", "병원 입퇴원 서류와 부재로 전달받은 석영리그의 회의록.", "그것들을 주워들었다."] },
+            { id: 5, scene: 2, subSceneIdx: 0, name: "테이블", description: "그 일이 일어나기 며칠 전에도 그는 병원에 입원을 했다. 사유는 언제나와 비슷했다. 약간 마른 그를 업고 집에 돌아왔던 기억이 있다. 특별할 것 없는 기억이 있다. 몇 번이고 그러하였으니. 그는 자신이 없는 날이면 집에서 홀로 무엇을 하고 있었던 걸까. 물어봐도 제대로 대답해주지 않으니 여태 알게 된 일은 없었다. 기다리는 사람 같은 건 없었을 텐데. ", image: "https://i.ibb.co/gF7S4pgF/5.jpg", pos: { top: '50%', left: '80%' }, dialogues: ["먼지가 앉은 테이블 위는 약간 희끄무레하다.", "쌓여있는 서류들에 눈길이 간다.", "병원 입퇴원 서류와 부재로 전달받은 석영리그의 회의록.", "그것들을 주워들었다."] },
             { id: 6, scene: 2, subSceneIdx: 1, name: "옷장", description: "청소의 사유는 계절이 아니라 부재에 있어야 한다는 사실을 자각하지 못했다. 의도한 것은 아니었다. 정말로 그렇게 생각할 수 없었고, 생각할 필요도 느끼지 못했다. 그저 무덤처럼 쌓여있는 검은 티셔츠들을 바라보았다. 색채 하나 없는 것들을 하나 둘 눈에 담을 때마다 제 색채 또한 하나 둘 사라져가는 것만 같은 착각이 든다.", image: "https://i.ibb.co/BVGDHgF5/6.jpg", pos: { top: '60%', left: '50%' }, dialogues: ["계절이 지나가지 않았으니 청소할 만한 것은 얼마 없을 것이다.", "손잡이를 잡아당겼다."] },
             { id: 7, scene: 2, subSceneIdx: 2, name: "침대", description: "그날의 기억이 떠오른다. 언제나와 같이 이른 아침이었다. 자는 척 눈을 감은 그를 내버려두고 홀로 은빛산에 올랐다가, 항상 하는 준비를 거쳐 리그에 출석할 준비를 마쳤다. 그때쯤 깨어난 그를 보고 의아하다는 표정을 지었다. 이 시간에도 자고 있을 터였는데. 싫은 소리라도 할까 싶어 가만히 바라보고 있으면 그는 예상과는 다른 말을 했다. 그게 무엇이었냐면―", image: "https://i.ibb.co/0R1HCKCB/7.jpg", pos: { top: '60%', left: '50%' }, dialogues: ["개어지지 않은 이불 위에 그대로 앉았다.", "나무 바닥도 아닌데 한기가 피부를 누르고, 억지로 벌려 그 틈을 비집고 들어온다.", "사람의 체온으로 데워질 일은 없을 거라고 생각한다."] },
             { id: 8, scene: 3, subSceneIdx: 0, name: "서랍", description: "그의 것과 달리 자신의 장갑은 매우 금방 닳는 편이었다. 산을 오르고 무거운 것을 옮기고, 몸을 자주 움직이는 편이었으니 금방 닳는 것도 당연하다. 하여 제 서랍에는 항상 여분의 장갑이 놓여있다. 같은 모양, 같은 사이즈, 같은 색. 마침 남은 것은 딱 하나다. 이제는 더 채우지 않아도 될 것 같다.", image: "https://i.ibb.co/ksFwdbqP/8.jpg", pos: { top: '80%', left: '30%' }, dialogues: ["의자를 잠시 바라보았다.", "자신의 자리가 아닌 것 같다.", "그래서 앉지 않았다.", "대신 서랍을 열었다.", "드르륵 하는 소리가 차갑다."] },
@@ -171,9 +170,9 @@
             { id: 5, title: "D-30 | ???", bgm: AUDIO_ASSETS.BGM_SCENE_5, subScenes: [{ id: 0, name: "알 수 없음", bg: "https://i.ibb.co/cKx1VbDm/image.jpg" }, { id: 1, name: "알 수 없음", bg: "https://i.ibb.co/yBFSrwMx/image.jpg" }], initialDialogues: ["전화가 시끄럽게 울린다.", "전화를 받지 않고 있으니 그만큼의 부재 메시지가 쌓인다.", "자신을 애타게 찾는 딱딱한 어투의 반복적인 메시지.", "발신인은 늘 방문하던 병원.", "......."], clearDialogues: ["눈앞이 점점 흐릿해진다.", "딛고 있는 땅 밑이 훅 꺼지는 것만 같은 착각이 든다.", "그러면서도 걷고 있다는 감각이 점점 사라진다.", "...마론이 죽었다.", "너무나도 쉽게.", "무엇을 해야 하는지 전혀 모르겠다.", "...해야 하는 건가?", "무엇을?", "......나는 무엇을 해야 하지?", "앞으로 어떻게 살아가야....", "마......", "이름을 부르기 직전 시야가 뒤집힌다.", "사방이 깜깜해진다."] },
             { id: 6, title: "D-16 | 너도밤나무숲", bgm: AUDIO_ASSETS.BGM_SCENE_6, subScenes: [{ id: 0, name: "세레비 사당", bg: "https://i.ibb.co/qMLqc4hr/image.jpg" }], initialDialogues: ["빽깥한 나무를 헤치고, 좁은 길을 계속하여 나아간다.", "걸음의 폭도, 길의 방향도 몸에 새겨진 듯 자연스럽게 움직인다.", "한 곳을 향해."], clearDialogues: ["빛이 번쩍인다.", "자연스럽게 눈을 감는다.", "과거로 돌아왔다.", "이제 비극을 막아야만 한다."] },
             { id: 7, title: "D-16 | 히스이지방", bgm: AUDIO_ASSETS.BGM_SCENE_7, subScenes: [{ id: 0, name: "무덤", bg: "https://i.ibb.co/GQNMVP82/image.png" }, { id: 1, name: "축제", bg: "https://i.ibb.co/HLYVVPvr/image.png" }, { id: 2, name: "축제 거리", bg: "https://i.ibb.co/q8BPpqt/image.png" }], initialDialogues: ["낯설지 않은 과거의 장소.", "'소우'로서의 삶을 살아갈 수 있게 해준 시작점.", "있을 곳을 잃어버린 지금, 당연하게도 그 다음을 떠올린다면 히스이다.", "분명한 이방인.", "그러나 좋아하는 것들이 많이 존재하는...", "그렇다면 내가 있을 곳이 되어줄 수 있지 않을까."], clearDialogues: [".......변하지 않는 것.", "애당초 영원이라는 것은 존재하지 않는 개념이었을지도 모른다.", "영원을 믿었다.", "그러므로 이 장소 또한 좋아하는 것이 되었다.", "그가 영원하리라는 것을 이곳에서 느낀 것과 다름없으니까.", "하지만....", "이제는.", "그것이 틀렸다는 것을 증명하기만 할 뿐인 장소.", "머리가 어지럽다.", "이곳에 있고 싶지 않게 된다.", "있고 싶지 않다.", "...나는 돌아가야만 해."] },
-            { id: 8, title: "D-7 | 연두마을", bgm: AUDIO_ASSETS.BGM_SCENE_8, subScenes: [{ id: 0, name: "침실", bg: "https://i.ibb.co/Y44ybbWc/image.jpg" }], initialDialogues: ["히스이에 다녀온 뒤로 며칠이 지났는지 기억도 나지 않는다.", "아주 먼 옛날 이야기가 된 것 같다.", "무엇을 해야 할 지 몰라 며칠을 그저 흘려보냈다.", "포켓몬의 소리조차 사라진 집은 고요하다."], clearDialogues: ["...점점 졸음이 몰려온다.", "아무것도 하지 않았지만, 그저 눈을 뜨고 숨을 쉬는 것만으로도 피로하다.", "...살아가고자 하게 되는 행위에 피로를 느낀다면 이제 저는 어떻게 해야 좋은 걸까.", "무엇을 선택해야 하는 걸까.", "저는...."] },
+            { id: 8, title: "D-7 | 연두마을", bgm: AUDIO_ASSETS.BGM_SCENE_8, subScenes: [{ id: 0, name: "침실", bg: "https://i.ibb.co/Y44ybbWc/image.jpg" }], initialDialogues: ["히스이에 다녀온 뒤로 며칠이 지났다.", "아주 먼 옛날 이야기가 된 것 같다.", "무엇을 해야 할 지 몰라 며칠을 그저 흘려보냈다.", "포켓몬의 소리조차 사라진 집은 고요하다."], clearDialogues: ["...점점 졸음이 몰려온다.", "아무것도 하지 않았지만, 그저 눈을 뜨고 숨을 쉬는 것만으로도 피로하다.", "...살아가고자 하게 되는 행위에 피로를 느낀다면 이제 저는 어떻게 해야 좋은 걸까.", "무엇을 선택해야 하는 걸까.", "저는...."] },
             { id: 9, title: "D-3 | 연두마을", bgm: AUDIO_ASSETS.BGM_SCENE_8, subScenes: [{ id: 0, name: "침실", bg: "https://i.ibb.co/Y44ybbWc/image.jpg" }], initialDialogues: [".......", "깨진 몬스터볼의 잔해를 바라본다.", ".......", "아무런 생각이 들지 않는다."], clearDialogues: ["휴대폰을 떨어뜨렸다.", "힘이 빠져서 미끄러져내린 것에 가깝다.", "다시 몬스터볼의 잔해를 바라보면 문득, 언젠가의 리그에서 생각했던 '필요'에 대해 생각하게 된다.", "리그에 있을 필요를 느끼지 못해 그 자리를 버렸다.", "히스이에 있을 필요를 느끼지 못해 그곳을 떠났다.", "이 집도.", "내일을 살아가는 것도.", "딱히 필요하지 않다는 생각이 들지만.", "그렇지만, 너의 옆에 있을 필요는 충분히 차고 넘친다.", "그렇다면....", "......."] },
-            { id: 10, title: "D-0 | ???", bgm: AUDIO_ASSETS.BGM_SCENE_9, subScenes: [{ id: 0, name: "???", bg: "https://i.ibb.co/s9C00MJY/image.png" }], initialDialogues: [".......", "꿈을 꿨다.", "꾼 것 같다.", "살아온 그 시간들이 제게 있어서는 나비의 꿈이었을지도 모른다.", "모든 것이 영원하지 않고, 또 덧없다는 것을 알게 되었다.", "하지만, 언젠가 변하게 된다 하더라도 아직 변하지 않은 것은.", "필요."], clearDialogues: ["너의 옆에 있을 필요.", "지금의 나에게 네가 필요하듯이.", "아직 우리가 파트너라는 이름으로 묶여있으므로, 변하지 않았기 때문에.", "너에게도 내가 필요할 것이다.", "서로가 필요하다면, 당연하게 내게 남은 선택지는.", "...마론.", "그를 만나는 것.", "그뿐이다."] }
+            { id: 10, title: "D-0 | ???", bgm: AUDIO_ASSETS.BGM_SCENE_9, subScenes: [{ id: 0, name: "???", bg: "https://i.ibb.co/s9C00MJY/image.png" }], initialDialogues: [".......", "꿈을 꿨다.", "꾼 것 같다.", "살아온 그 시간들이 제게 있어서는 나비의 꿈이었을지도 모른다.", "모든 것이 영원하지 않고, 또 덧없다는 것을 알게 되었다.", "하지만, 언젠가 변하게 된다 하더라도 아직 변하지 않은 것은.", "필요."], clearDialogues: ["너의 옆에 있을 필요.", "지금의 나에게 네가 필요하듯이.", "아직 우리가 파트너라는 이름으로 묶여있으므로, 변하지 않았기 때문에.", "너에게도 내가 필요할 것이다.", "서로가 필요하다면, 당연하게 내게 남은 선택지는.", "...마론.", "그를 만나는 것.", "그뿐이다.", "CASE CLOSED."] }
         ];
 
         const MAP_CONFIG = {
@@ -203,8 +202,8 @@
 
         function App() {
             const [gameState, setGameState] = useState('INTRO');
-            // 테스트 모드: Scene 9(index 8)부터 시작. 배포 시 0으로 변경 권장.
-            const [currentSceneIdx, setCurrentSceneIdx] = useState(8); 
+            // 시작 지점: Scene 1 (index 0)
+            const [currentSceneIdx, setCurrentSceneIdx] = useState(0); 
             const [currentSubSceneIdx, setCurrentSubSceneIdx] = useState(0);
             const [foundItems, setFoundItems] = useState([]);
             const [selectedItem, setSelectedItem] = useState(null);
@@ -236,7 +235,8 @@
             
             const hasFoundScene5Item = ITEMS.some(item => (item.scene === 5) && foundItems.includes(item.id));
             const currentLocationName = currentScene?.title?.split('|')[1]?.trim() || "";
-            const isHisui = currentLocationName === "히스이지방" || currentLocationName === "???" || currentLocationName === "너도밤나무숲";
+            
+            const isHisui = currentScene.id === 7;
 
             const playClickSfx = () => {
                 if (sfxClickRef.current && !isMuted) {
@@ -305,7 +305,10 @@
                     const playBgm = async () => {
                         try {
                             if (isMuted) { bgmRef.current.pause(); return; }
-                            if (bgmRef.current.src !== currentScene.bgm) { bgmRef.current.src = currentScene.bgm; bgmRef.current.load(); }
+                            if (bgmRef.current.src !== currentScene.bgm) {
+                                bgmRef.current.src = currentScene.bgm;
+                                bgmRef.current.load();
+                            }
                             await bgmRef.current.play();
                         } catch (err) {}
                     };
@@ -346,98 +349,99 @@
 
             return (
                 <div className={`min-h-screen ${gameState === 'INTRO' ? 'bg-[#18181b]' : 'bg-black'} text-white overflow-hidden flex flex-col items-center justify-center select-none transition-colors duration-500`} style={pixelFontStyle}>
+                    
                     {/* --- Intro Screen --- */}
                     {gameState === 'INTRO' && (
-                        <div className="flex flex-col items-center fade-in text-center px-4">
-                            <div className="w-48 h-48 mb-12 cursor-pointer active:scale-95 flex items-center justify-center overflow-hidden" onClick={handleStart}>
-                                <img src="https://i.ibb.co/xKsxz8wT/image.png" alt="Logo" className="w-full h-full object-contain p-2" />
+                        <div className="flex flex-col items-center fade-in-screen text-center px-6">
+                            <div className="w-72 h-72 mb-18 cursor-pointer active:scale-95 flex items-center justify-center overflow-hidden" onClick={handleStart}>
+                                <img src="https://i.ibb.co/xKsxz8wT/image.png" alt="Logo" className="w-full h-full object-contain p-3" />
                             </div>
-                            <p className="text-[10px] animate-blink text-green-500 font-bold uppercase tracking-widest">pause the button</p>
+                            <p className="text-[15px] animate-blink text-green-500 font-bold uppercase tracking-widest">pause the button</p>
                         </div>
                     )}
 
-                    {/* --- Exploration Screen --- */}
+                    {/* --- Exploration Screen --- (1.5x Scaled) */}
                     {gameState === 'EXPLORE' && currentSubScene && (
-                        <div className="relative w-full max-w-4xl aspect-video bg-zinc-900 overflow-hidden pixel-border mx-4">
+                        <div className="relative w-full max-w-[1344px] aspect-video bg-zinc-900 overflow-hidden pixel-border mx-6">
                             <div className="absolute inset-0 bg-cover bg-center transition-all duration-700" style={{ backgroundImage: `url(${currentSubScene.bg})` }} />
                             <div className="absolute inset-0 bg-blue-900/10" />
 
-                            <div className="absolute top-4 left-4 flex gap-2 z-10">
-                                <div className="bg-black/80 px-3 py-2 border border-white text-[8px] flex items-center gap-2">
+                            <div className="absolute top-6 left-6 flex gap-3 z-10">
+                                <div className="bg-black/80 px-5 py-3 border-2 border-white text-[12px] flex items-center gap-3">
                                     <span className="text-yellow-400">현재 위치:</span> {currentScene.title} - {currentSubScene.name}
                                 </div>
-                                <button onClick={() => { playPaperSfx(); setShowMap(true); }} className="bg-zinc-800 hover:bg-zinc-700 px-3 py-2 border border-white text-[8px] flex items-center gap-2 transition-colors">
-                                    <Icon name="map" size={12} /> 지도
+                                <button onClick={() => { playPaperSfx(); setShowMap(true); }} className="bg-zinc-800 hover:bg-zinc-700 px-5 py-3 border-2 border-white text-[12px] flex items-center gap-3 transition-colors">
+                                    <Icon name="map" size={18} /> 지도
                                 </button>
-                                <button onClick={() => { playClickSfx(); setIsMuted(!isMuted); }} className="bg-zinc-800 hover:bg-zinc-700 px-3 py-2 border border-white text-[8px] flex items-center gap-2 transition-colors">
-                                    {isMuted ? <Icon name="volume-x" size={12} /> : <Icon name="volume-2" size={12} />}
+                                <button onClick={() => { playClickSfx(); setIsMuted(!isMuted); }} className="bg-zinc-800 hover:bg-zinc-700 px-5 py-3 border-2 border-white text-[12px] flex items-center gap-3 transition-colors">
+                                    {isMuted ? <Icon name="volume-x" size={18} /> : <Icon name="volume-2" size={18} />}
                                 </button>
                             </div>
 
                             {!isDialogueActive && (
                                 <>
-                                    {currentSubSceneIdx > 0 && <button onClick={() => { playClickSfx(); setCurrentSubSceneIdx(currentSubSceneIdx - 1); }} className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-black/60 border border-white hover:bg-white hover:text-black transition-all"><Icon name="chevron-left" size={24} /></button>}
-                                    {currentSubSceneIdx < (currentScene.subScenes.length - 1) && <button onClick={() => { playClickSfx(); setCurrentSubSceneIdx(currentSubSceneIdx + 1); }} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-black/60 border border-white hover:bg-white hover:text-black transition-all"><Icon name="chevron-right" size={24} /></button>}
+                                    {currentSubSceneIdx > 0 && <button onClick={() => { playClickSfx(); setCurrentSubSceneIdx(currentSubSceneIdx - 1); }} className="absolute left-6 top-1/2 -translate-y-1/2 p-3 bg-black/60 border-2 border-white hover:bg-white hover:text-black transition-all"><Icon name="chevron-left" size={36} /></button>}
+                                    {currentSubSceneIdx < (currentScene.subScenes.length - 1) && <button onClick={() => { playClickSfx(); setCurrentSubSceneIdx(currentSubSceneIdx + 1); }} className="absolute right-6 top-1/2 -translate-y-1/2 p-3 bg-black/60 border-2 border-white hover:bg-white hover:text-black transition-all"><Icon name="chevron-right" size={36} /></button>}
                                 </>
                             )}
 
                             {!isDialogueActive && ITEMS.filter(i => i.scene === currentScene.id && i.subSceneIdx === currentSubSceneIdx).map((item) => (
-                                <button key={item.id} onClick={() => handleItemClick(item)} className="absolute p-2 bg-white/20 hover:bg-white/40 rounded-full transition-transform hover:scale-110 active:scale-90 border border-white/50 group" style={{ top: item.pos.top, left: item.pos.left }}>
-                                    <Icon name="search" size={20} className={foundItems.includes(item.id) ? "text-green-400" : "text-white"} />
+                                <button key={item.id} onClick={() => handleItemClick(item)} className="absolute p-3 bg-white/20 hover:bg-white/40 rounded-full transition-transform hover:scale-110 active:scale-90 border-2 border-white/50 group" style={{ top: item.pos.top, left: item.pos.left }}>
+                                    <Icon name="search" size={30} className={foundItems.includes(item.id) ? "text-green-400" : "text-white"} />
                                 </button>
                             ))}
 
                             {isDialogueActive && (
-                                <div className="absolute bottom-4 left-4 right-4 dialogue-box p-5 min-h-[90px] cursor-pointer fade-in z-20" onClick={handleNextDialogue}>
-                                    <p className="text-[10px] leading-relaxed text-left px-4 whitespace-pre-wrap">{dialogueQueue[dialogueStep]}</p>
-                                    <div className="absolute bottom-2 right-4 animate-bounce text-zinc-400"><Icon name="chevron-down" size={14} /></div>
+                                <div className="absolute bottom-6 left-6 right-6 dialogue-box p-8 min-h-[135px] cursor-pointer z-20" onClick={handleNextDialogue}>
+                                    <p className="text-[15px] leading-relaxed text-left px-6 whitespace-pre-wrap">{dialogueQueue[dialogueStep]}</p>
+                                    <div className="absolute bottom-3 right-6 animate-bounce text-zinc-400"><Icon name="chevron-down" size={21} /></div>
                                 </div>
                             )}
 
-                            <div className="absolute bottom-4 right-4 flex gap-4 z-10 items-end">
+                            <div className="absolute bottom-6 right-6 flex gap-6 z-10 items-end">
                                 {hasFoundScene5Item && (
                                     <div className="flex flex-col items-center">
-                                        <button onClick={() => { playPaperSfx(); setShowQuestionMemory(true); }} className="p-3 bg-black/80 border border-white hover:bg-zinc-800 transition-colors relative"><Icon name="ghost" size={20} className="text-purple-300" /></button>
-                                        <div className="mt-0.5 bg-black text-[6px] px-1 border border-white whitespace-nowrap">?의 기억</div>
+                                        <button onClick={() => { playPaperSfx(); setShowQuestionMemory(true); }} className="p-[18px] bg-black/80 border-2 border-white hover:bg-zinc-800 transition-colors relative"><Icon name="ghost" size={30} className="text-purple-300" /></button>
+                                        <div className="mt-1 bg-black text-[10px] px-2 border-2 border-white whitespace-nowrap">?의 기억</div>
                                     </div>
                                 )}
                                 <div className="flex flex-col items-center">
-                                    <button onClick={() => { playPaperSfx(); setShowCaseFile(true); }} className="p-3 bg-black/80 border border-white hover:bg-zinc-800 transition-colors relative"><Icon name="file-text" size={20} /></button>
-                                    <div className="mt-0.5 bg-black text-[6px] px-1 border border-white whitespace-nowrap">기억 조각</div>
+                                    <button onClick={() => { playPaperSfx(); setShowCaseFile(true); }} className="p-[18px] bg-black/80 border-2 border-white hover:bg-zinc-800 transition-colors relative"><Icon name="file-text" size={30} /></button>
+                                    <div className="mt-1 bg-black text-[10px] px-2 border-2 border-white whitespace-nowrap">기억 조각</div>
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    {/* --- Item Detail Popup --- */}
+                    {/* --- Item Detail Popup --- (1.5x Scaled) */}
                     {selectedItem && (
-                        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/95 p-4 fade-in">
-                            <div className="relative w-full max-w-2xl bg-zinc-800 border border-white p-8 text-left">
-                                <button onClick={() => { playClickSfx(); setSelectedItem(null); }} className="absolute top-4 right-4 hover:text-red-500"><Icon name="x" size={24} /></button>
-                                <div className="flex flex-row items-start gap-8">
-                                    <div className="w-48 h-48 bg-zinc-700 border border-zinc-600 flex-shrink-0 overflow-hidden"><img src={selectedItem.image} alt={selectedItem.name} className="w-full h-full object-cover" /></div>
+                        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/95 p-6">
+                            <div className="relative w-full max-w-[1008px] bg-zinc-800 border-2 border-white p-12 text-left">
+                                <button onClick={() => { playClickSfx(); setSelectedItem(null); }} className="absolute top-6 right-6 hover:text-red-500"><Icon name="x" size={36} /></button>
+                                <div className="flex flex-row items-start gap-12">
+                                    <div className="w-72 h-72 bg-zinc-700 border-2 border-zinc-600 flex-shrink-0 overflow-hidden"><img src={selectedItem.image} alt={selectedItem.name} className="w-full h-full object-cover" /></div>
                                     <div className="flex-1">
-                                        <h3 className="text-sm mb-6 text-white font-bold">{selectedItem.name}</h3>
-                                        <div className="bg-black/30 p-4 border border-zinc-700"><p className="text-[10px] leading-relaxed text-zinc-300 tracking-tighter whitespace-pre-wrap">{selectedItem.description}</p></div>
+                                        <h3 className="text-[21px] mb-9 text-white font-bold">{selectedItem.name}</h3>
+                                        <div className="bg-black/30 p-6 border-2 border-zinc-700"><p className="text-[15px] leading-relaxed text-zinc-300 tracking-tighter whitespace-pre-wrap">{selectedItem.description}</p></div>
                                     </div>
                                 </div>
-                                <button onClick={() => { playClickSfx(); setSelectedItem(null); }} className="mt-8 pixel-btn text-[8px] w-full">닫기</button>
+                                <button onClick={() => { playClickSfx(); setSelectedItem(null); }} className="mt-12 pixel-btn text-[12px] w-full">닫기</button>
                             </div>
                         </div>
                     )}
 
-                    {/* --- Map Modal --- */}
+                    {/* --- Map Modal --- (1.5x Scaled) */}
                     {showMap && (
-                        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4 fade-in">
-                            <div className="w-full max-w-md bg-zinc-900 border-2 border-white p-6 relative overflow-hidden">
-                                <button onClick={() => { playClickSfx(); setShowMap(false); }} className="absolute top-2 right-2 hover:text-red-500 p-1 z-50"><Icon name="x" size={24} /></button>
-                                <div className="mb-4 flex flex-col items-center">
-                                    <h2 className="text-xs text-yellow-400 mb-1 font-bold">{isHisui ? "히스이지방" : "성도지방"}</h2>
+                        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-6">
+                            <div className="w-full max-w-[672px] bg-zinc-900 border-2 border-white p-9 relative overflow-hidden">
+                                <button onClick={() => { playClickSfx(); setShowMap(false); }} className="absolute top-3 right-3 hover:text-red-500 p-2 z-50"><Icon name="x" size={36} /></button>
+                                <div className="mb-6 flex flex-col items-center">
+                                    <h2 className="text-[18px] text-yellow-400 mb-2 font-bold">{isHisui ? "히스이지방" : "성도지방"}</h2>
                                     {!isHisui && !MAP_CONFIG.nodes.some(n => n.label?.replace('\n', '') === currentLocationName) ? (
-                                        <div className="flex items-center gap-2 text-red-500 bg-red-950/30 px-2 py-1 border border-red-900"><Icon name="alert-circle" size={10} /><span className="text-[7px]">해당 위치 확인 불가</span></div>
-                                    ) : (!isHisui && <div className="text-[7px] text-green-400">현재 위치: {currentLocationName}</div>)}
+                                        <div className="flex items-center gap-3 text-red-500 bg-red-950/30 px-3 py-1.5 border-2 border-red-900"><Icon name="alert-circle" size={15} /><span className="text-[10px]">해당 위치 확인 불가</span></div>
+                                    ) : (!isHisui && <div className="text-[10px] text-green-400">현재 위치: {currentLocationName}</div>)}
                                 </div>
-                                <div className="relative w-full aspect-[4/3] bg-zinc-800 border-2 border-zinc-700 p-2">
+                                <div className="relative w-full aspect-[4/3] bg-zinc-800 border-2 border-zinc-700 p-3">
                                     <svg viewBox="0 0 320 220" className="w-full h-full shadow-inner">
                                         {isHisui ? (
                                             <g>
@@ -476,19 +480,19 @@
                         </div>
                     )}
 
-                    {/* --- Case File --- */}
+                    {/* --- Case File --- (1.5x Scaled) */}
                     {showCaseFile && (
-                        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-4 fade-in">
-                            <div className="w-full max-w-2xl bg-zinc-900 border border-white p-6 max-h-[85vh] flex flex-col">
-                                <div className="flex justify-between items-center mb-6 border-b border-zinc-800 pb-4"><h2 className="text-xs flex items-center gap-3"><Icon name="file-text" size={18} /> 기억 조각</h2><button onClick={() => { playClickSfx(); setShowCaseFile(false); }}><Icon name="x" size={24} /></button></div>
-                                <div className="flex-1 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-4 pr-2 custom-scrollbar">
+                        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-6">
+                            <div className="w-full max-w-[1008px] bg-zinc-900 border-2 border-white p-9 max-h-[85vh] flex flex-col">
+                                <div className="flex justify-between items-center mb-9 border-b-2 border-zinc-800 pb-6"><h2 className="text-[18px] flex items-center gap-4"><Icon name="file-text" size={27} /> 기억 조각</h2><button onClick={() => { playClickSfx(); setShowCaseFile(false); }}><Icon name="x" size={36} /></button></div>
+                                <div className="flex-1 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-6 pr-3 custom-scrollbar">
                                     {ITEMS.filter(item => item.scene !== 5).map((item, idx) => {
                                         const isFound = foundItems.includes(item.id);
                                         return (
-                                            <div key={`frag-${item.id}-${idx}`} onClick={() => { if(isFound) { playPaperSfx(); setSelectedItem(item); } }} className={`p-3 border transition-all ${isFound ? 'border-white bg-zinc-800 cursor-pointer hover:bg-zinc-700' : 'border-dashed border-zinc-700 opacity-40 cursor-default'}`}>
-                                                <div className="flex gap-4">
-                                                    <div className="w-16 h-16 bg-zinc-700 flex-shrink-0">{isFound && <img src={item.image} className="w-full h-full object-cover" />}</div>
-                                                    <div className="flex flex-col justify-center"><p className={`text-[10px] ${isFound ? 'text-yellow-400' : 'text-zinc-600'}`}>{isFound ? item.name : "데이터 없음"}</p>{isFound && <p className="text-[7px] text-zinc-500 mt-1 text-left">{getItemLocationName(item)}</p>}</div>
+                                            <div key={`frag-${item.id}-${idx}`} onClick={() => { if(isFound) { playPaperSfx(); setSelectedItem(item); } }} className={`p-4.5 border-2 transition-all ${isFound ? 'border-white bg-zinc-800 cursor-pointer hover:bg-zinc-700' : 'border-dashed border-zinc-700 opacity-40 cursor-default'}`}>
+                                                <div className="flex gap-6">
+                                                    <div className="w-24 h-24 bg-zinc-700 flex-shrink-0">{isFound && <img src={item.image} className="w-full h-full object-cover" />}</div>
+                                                    <div className="flex flex-col justify-center"><p className={`text-[15px] ${isFound ? 'text-yellow-400' : 'text-zinc-600'}`}>{isFound ? item.name : "데이터 없음"}</p>{isFound && <p className="text-[10px] text-zinc-500 mt-1 text-left">{getItemLocationName(item)}</p>}</div>
                                                 </div>
                                             </div>
                                         );
@@ -498,19 +502,19 @@
                         </div>
                     )}
 
-                    {/* --- Question Memory --- */}
+                    {/* --- Question Memory --- (1.5x Scaled) */}
                     {showQuestionMemory && (
-                        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-4 fade-in">
-                            <div className="w-full max-w-2xl bg-zinc-900 border border-white p-6 max-h-[85vh] flex flex-col shadow-[0_0_20px_rgba(168,85,247,0.4)]">
-                                <div className="flex justify-between items-center mb-6 border-b border-purple-800 pb-4"><h2 className="text-xs flex items-center gap-3 text-purple-400"><Icon name="ghost" size={18} /> ?의 기억</h2><button onClick={() => { playClickSfx(); setShowQuestionMemory(false); }}><Icon name="x" size={24} /></button></div>
-                                <div className="flex-1 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-4 pr-2 custom-scrollbar">
+                        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-6">
+                            <div className="w-full max-w-[1008px] bg-zinc-900 border-2 border-white p-9 max-h-[85vh] flex flex-col shadow-[0_0_30px_rgba(168,85,247,0.4)]">
+                                <div className="flex justify-between items-center mb-6 border-b-2 border-purple-800 pb-6"><h2 className="text-[18px] flex items-center gap-4 text-purple-400"><Icon name="ghost" size={27} /> ?의 기억</h2><button onClick={() => { playClickSfx(); setShowQuestionMemory(false); }}><Icon name="x" size={36} /></button></div>
+                                <div className="flex-1 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-6 pr-3 custom-scrollbar">
                                     {ITEMS.filter(item => item.scene === 5).map((item, idx) => {
                                         const isFound = foundItems.includes(item.id);
                                         return (
-                                            <div key={`mem-${item.id}-${idx}`} onClick={() => { if(isFound) { playPaperSfx(); setSelectedItem(item); } }} className={`p-3 border transition-all ${isFound ? 'border-white bg-zinc-800 cursor-pointer hover:bg-purple-900/30' : 'border-dashed border-zinc-700 opacity-40 cursor-default'}`}>
-                                                <div className="flex gap-4">
-                                                    <div className="w-16 h-16 bg-zinc-700 flex-shrink-0">{isFound && <img src={item.image} className="w-full h-full object-cover" />}</div>
-                                                    <div className="flex flex-col justify-center"><p className={`text-[10px] ${isFound ? 'text-purple-300' : 'text-zinc-600'}`}>{isFound ? item.name : "결여된 기억"}</p>{isFound && <p className="text-[7px] text-zinc-500 mt-1 text-left">{getItemLocationName(item)}</p>}</div>
+                                            <div key={`mem-${item.id}-${idx}`} onClick={() => { if(isFound) { playPaperSfx(); setSelectedItem(item); } }} className={`p-4.5 border-2 transition-all ${isFound ? 'border-white bg-zinc-800 cursor-pointer hover:bg-purple-900/30' : 'border-dashed border-zinc-700 opacity-40 cursor-default'}`}>
+                                                <div className="flex gap-6">
+                                                    <div className="w-24 h-24 bg-zinc-700 flex-shrink-0">{isFound && <img src={item.image} className="w-full h-full object-cover" />}</div>
+                                                    <div className="flex flex-col justify-center"><p className={`text-[15px] ${isFound ? 'text-purple-300' : 'text-zinc-600'}`}>{isFound ? item.name : "결여된 기억"}</p>{isFound && <p className="text-[7px] text-zinc-500 mt-1 text-left">{getItemLocationName(item)}</p>}</div>
                                                 </div>
                                             </div>
                                         );
@@ -522,23 +526,23 @@
 
                     {/* --- End Screen (Interactive Sequence) --- */}
                     {gameState === 'END' && (
-                        <div className="flex flex-col items-center justify-center text-center p-8 fade-in w-full h-full bg-black relative">
+                        <div className="flex flex-col items-center justify-center text-center p-12 fade-in-screen w-full h-full bg-black relative">
                             {endPhase === 'IMAGE' ? (
                                 <div 
-                                    className="w-48 h-48 cursor-pointer active:scale-95 transition-all duration-1000 flex items-center justify-center overflow-hidden" 
+                                    className="w-72 h-72 cursor-pointer active:scale-95 transition-all duration-1000 flex items-center justify-center overflow-hidden" 
                                     onClick={() => { playClickSfx(); setEndPhase('TYPING'); }}
                                 >
-                                    <img src="https://i.ibb.co/xKsxz8wT/image.png" alt="Ending Logo" className="w-full h-full object-contain p-2" />
+                                    <img src="https://i.ibb.co/xKsxz8wT/image.png" alt="Ending Logo" className="w-full h-full object-contain p-3" />
                                 </div>
                             ) : (
-                                <div className="flex flex-col items-center gap-6">
-                                    <h1 className="text-sm leading-loose tracking-widest min-h-[1.5em]" style={pixelFontStyle}>
+                                <div className="flex flex-col items-center gap-9">
+                                    <h1 className="text-[21px] leading-loose tracking-widest min-h-[1.5em]" style={pixelFontStyle}>
                                         {typedTexts[0]}
                                     </h1>
-                                    <p className="text-xs leading-relaxed min-h-[1.5em] text-zinc-400" style={pixelFontStyle}>
+                                    <p className="text-[18px] leading-relaxed min-h-[1.5em] text-zinc-400" style={pixelFontStyle}>
                                         {typedTexts[1]}
                                     </p>
-                                    <p className="text-[10px] leading-relaxed min-h-[1.5em] tracking-tighter" style={pixelFontStyle}>
+                                    <p className="text-[15px] leading-relaxed min-h-[1.5em] tracking-tighter" style={pixelFontStyle}>
                                         {typedTexts[2]}
                                     </p>
                                 </div>
@@ -548,19 +552,19 @@
 
                     {/* --- Epilogue Screen --- */}
                     {gameState === 'EPILOGUE' && (
-                        <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center p-8 fade-in">
+                        <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center p-12">
                             {isDialogueActive && (
-                                <div className="w-full max-w-2xl dialogue-box p-10 min-h-[180px] cursor-pointer relative" onClick={handleNextDialogue}>
-                                    <p className="text-[10px] leading-loose text-left px-4 whitespace-pre-wrap">{dialogueQueue[dialogueStep]}</p>
-                                    <div className="absolute bottom-4 right-6 animate-bounce text-zinc-400"><Icon name="chevron-down" size={18} /></div>
+                                <div className="w-full max-w-[1008px] dialogue-box p-15 min-h-[270px] cursor-pointer relative" onClick={handleNextDialogue}>
+                                    <p className="text-[15px] leading-loose text-left px-6 whitespace-pre-wrap">{dialogueQueue[dialogueStep]}</p>
+                                    <div className="absolute bottom-6 right-9 animate-bounce text-zinc-400"><Icon name="chevron-down" size={27} /></div>
                                 </div>
                             )}
                             {!isDialogueActive && (
-                                <div className="flex flex-col items-center fade-in text-center w-full max-w-4xl">
+                                <div className="flex flex-col items-center fade-in-screen text-center w-full max-w-[1344px]">
                                     <img 
                                         src="https://i.ibb.co/0yJKc6ZY/16-9.png" 
                                         alt="End of Investigation" 
-                                        className="w-full h-auto object-contain p-4" 
+                                        className="w-full h-auto object-contain p-6" 
                                     />
                                 </div>
                             )}
