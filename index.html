@@ -80,6 +80,15 @@
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+        /* 엔딩 크레딧 애니메이션: 속도를 더 느리게(90s) 조정 */
+        @keyframes scrollCredits {
+            0% { transform: translateY(100vh); }
+            100% { transform: translateY(-120%); }
+        }
+        .credits-scroll {
+            animation: scrollCredits 90s linear forwards;
+        }
     </style>
 </head>
 <body>
@@ -118,6 +127,7 @@
             BGM_SCENE_8: "https://cropgif.net/audio/1776071419970-a3b62fb0-b078-40a5-9c71-515819eb169e.mp3",
             BGM_SCENE_9: "https://cropgif.net/audio/1776071453510-67ffbc00-701d-403d-a7d8-95f714626376.mp3",
             BGM_ENDING: "https://www.image2url.com/r2/default/audio/1776132992410-e65137cf-5525-4303-806f-0784200c2bb8.mp3",
+            BGM_CREDITS: "https://www.image2url.com/r2/default/audio/1776140169677-4014c8a1-4db6-4bfd-8519-5fc59f9a7072.mp3",
             SFX_CLICK: "https://www.soundjay.com/buttons/sounds/button-16.mp3",
             SFX_PAPER: "https://www.soundjay.com/human/sounds/paper-flip-1.mp3",
             SFX_FINAL_LOVE: "https://www.image2url.com/r2/default/audio/1776133728024-0d923179-873a-40c5-bf04-9b84ef13342f.mp3"
@@ -146,14 +156,14 @@
 
         const HIDDEN_DIALOGUES = [
             "...나비의 꿈.",
-            "성장, 희망... 여러 뜻이 있지만.",
-            "개중에는 축복으로 해석할 수 있는 장면 또한 있다고 한다.",
-            "축복.......",
-            "그렇구나.",
-            "선생님의 말을 언뜻 알 것 같기도 하다.",
-            "하지만 그걸 받아들일 수 없는 내가 이 자리에 있고, 여전히 나는 너를.",
-            "너는 나를 필요로 하고 있을 테니까.",
-            "영원이 끝나기 전에...."
+            "현실과 꿈의 경계가 모호한 삶의 허무함을 상징하는 말로 쓰이기도 하나.",
+            "다른 측면에서는 나비의 꿈 자체가 축복이 찾아오리라는 것을 상징하는 암시라고 볼 수 있다 한다.",
+            "어디서부터 현실이고 꿈이었으며, 또 어디서부터 축복이었는지.",
+            "생애를 한마디로 줄인다면 정말 '나비의 꿈' 그 자체였을지도 모르겠다.",
+            "...아니다.",
+            "끝을 앞둔 이제 와서 이런 것을 생각하는 것은 불필요한 일이다.",
+            "지금은, 너를 만나러 가야 하니까.",
+            "나조차도 영원에서 멀어지기 전에...."
         ];
 
         const ITEMS = [
@@ -188,13 +198,13 @@
             { id: 1, dday: "D-29", title: "D-29 | 장례식장", bgm: AUDIO_ASSETS.BGM_SCENE_1, subScenes: [{ id: 0, name: "빈소", bg: "https://i.ibb.co/CpNs8gQp/image.jpg" }, { id: 1, name: "식당", bg: "https://i.ibb.co/Mx45KCWL/image.jpg" }, { id: 2, name: "접견실", bg: "https://i.ibb.co/5hymyDbg/image.jpg" }], initialDialogues: ["사람이 많이 빠져나간 장례식장이다.", "부드러운 주홍색 조명이 살갗을 꿰뚫는 듯한 기분이 든다.", "죽음을 실체화하는 가장 마지막의 단계, 장례.", "그리고 그것을 모두에게 각인시키는 장소.", "...이기 때문이라고 생각한다."], clearDialogues: ["마지막으로 장례식장을 둘러보는 동안 사람이 더 빠져나간 모양이다.", "고요하다.", "자신에게 향하고 있는 시선을 읽어낸다.", "걱정스러움이다.", "하지만 특별히 말을 걸어 괜찮다고 하고 싶지는 않았다.", "그럴 필요를 느끼지 못했을 뿐더러....", "...괜찮은 건지 잘 모르겠다.", "괜찮지 않다면 괜찮지 않은 건 또 무엇인지.", "어떤 반응을 해야하는 건지.", "무엇도 모르겠다.", "이상하게 붕 뜨는 걸음을 딛어 몸을 돌렸다.", "집으로 가는 길은 잊지 않아 다행인 일이다."] },
             { id: 2, dday: "D-26", title: "D-26 | 연두마을", bgm: AUDIO_ASSETS.BGM_SCENE_2, subScenes: [{ id: 0, name: "거실", bg: "https://i.ibb.co/bM4nHjYx/image.jpg" }, { id: 1, name: "다락방", bg: "https://i.ibb.co/FLKJN0Cc/image.png" }, { id: 2, name: "침실", bg: "https://i.ibb.co/Y44ybbWc/image.jpg" }], initialDialogues: ["문고리에 닿은 손으로부터 전해지는 한기에서부터 느꼈지만, 3일만의 집은 냉랭하다.", "우리 집.", "...보다는, 꼭 남의 집처럼.", "집안일이라고는 하나도 되어 있지 않은 집은 눈으로만 보아도 어지럽다.", "하지만 막상 무언가를 시작하려니 결심보다 빠른 건 필요의 부재를 느껴버린 머리의 포기 선언이었다.", "...급한 것만 해결해두도록 하자."], clearDialogues: ["졸음이 쏟아진다.", "시야가 암전하기 직전, 벽에 걸린 상패가 눈에 들었다.", "해야할 일.", "행선지가 정해졌다.", "그대로 눈을 감았다."] },
             { id: 3, dday: "D-24", title: "D-24 | 석영고원", bgm: AUDIO_ASSETS.BGM_SCENE_3, subScenes: [{ id: 0, name: "집무실", bg: "https://i.ibb.co/ZRD7dkbT/image.jpg" }, { id: 1, name: "배틀코트", bg: "https://i.ibb.co/6J1j9X94/image.png" }], initialDialogues: ["익숙한 풍경이 펼쳐지고 있다.", "실력 있는 트레이너들이 사천왕을 힘껏 상대하고 있다.", "그런 모습들이 더더욱 자신을 이곳에 있고 싶지 않게 만들고 있다.", "계속해서 발을 옮긴다.", "모든 것은 언젠가 사라진다.", "영원하지 않다면 전부 소용없는 일이다.", "언제가 다시 빛난다 해도, 처음부터 끝까지 영원하지 않았던 것을 영원이라 부를 수 있을까.", "적어도 자신의 영원은 그런 것이 아니다.", "그렇다면 알면서도 붙잡고 있는 것은 어리석은 일이겠지.", "어리석은 일.", "자신이 생각하기에도 차가운 말이다.", "마치 누군가를 닮은...."], clearDialogues: ["축하한다는 말은 하지 않았다.", "아니, 아무런 말도 하지 않았다.", ".......", ".......", "시선들은 제각각의 감정을 표하면서 자신의 몸을 찔렀다.", "도전자의 옆을 스쳐지나가면서도 그의 얼굴을 보지 않았다.", "제멋대로 볼에서 튀어나온 이브이가 앞을 가로막는다.", "그대로 그 옆을 지나갔다.", "옳고 그른 것을 따지기 전에 생각하게 된 것은 필요다.", "내게는 더 이상 필요하지 않은 자리.", "그런 것이다.", "다른 이유는 없다.", "앞으로 배틀 같은 건 하지 않을 것이다."] },
-            { id: 4, dday: "D-17", title: "D-17 | 연두마을", bgm: AUDIO_ASSETS.BGM_SCENE_4, subScenes: [{ id: 0, name: "거실", bg: "https://i.ibb.co/bM4nHjYx/image.jpg" }, { id: 1, name: "침실", bg: "https://i.ibb.co/Y44ybbWc/image.jpg" }], initialDialogues: ["아침 일찍 사람들이 다녀간 거실은 오랜만에 그나마의 온기가 감돌고 있다.", ".......", "그나마의 온기라고 생각하는 자신에게 놀랐다.", "그나마의 사람들이 아니었는데.", "...그들이 두고 간 짐을 정리해야 한다.", "늘어지는 몸을 일으켰다."], clearDialogues: ["괜찮아진다는 것은 무엇인가.", "나아진다는 것은 지금과 어떤 것이 다른가.", "...상상할 수 없다.", "지금의 이 상태도 상상해본 적 없으니 그 다음의 단계를 상상하는 것이 불가능한 것도 당연하다.", "만약 괜찮아진다는 것이 원래 상태로의 회귀를 의미하는 것이라면.", "생명을 잃은 사람은 돌아올 수 없으므로.", "자신은 영원히 괜찮아질 수 없다.", "......."] },
+            { id: 4, dday: "D-17", title: "D-17 | 연두마을", bgm: AUDIO_ASSETS.BGM_SCENE_3, subScenes: [{ id: 0, name: "거실", bg: "https://i.ibb.co/bM4nHjYx/image.jpg" }, { id: 1, name: "침실", bg: "https://i.ibb.co/Y44ybbWc/image.jpg" }], initialDialogues: ["아침 일찍 사람들이 다녀간 거실은 오랜만에 그나마의 온기가 감돌고 있다.", ".......", "그나마의 온기라고 생각하는 자신에게 놀랐다.", "그나마의 사람들이 아니었는데.", "...그들이 두고 간 짐을 정리해야 한다.", "늘어지는 몸을 일으켰다."], clearDialogues: ["괜찮아진다는 것은 무엇인가.", "나아진다는 것은 지금과 어떤 것이 다른가.", "...상상할 수 없다.", "지금의 이 상태도 상상해본 적 없으니 그 다음의 단계를 상상하는 것이 불가능한 것도 당연하다.", "만약 괜찮아진다는 것이 원래 상태로의 회귀를 의미하는 것이라면.", "생명을 잃은 사람은 돌아올 수 없으므로.", "자신은 영원히 괜찮아질 수 없다.", "......."] },
             { id: 5, dday: "D-30", title: "D-30 | ???", bgm: AUDIO_ASSETS.BGM_SCENE_5, subScenes: [{ id: 0, name: "알 수 없음", bg: "https://i.ibb.co/cKx1VbDm/image.jpg" }, { id: 1, name: "알 수 없음", bg: "https://i.ibb.co/yBFSrwMx/image.jpg" }], initialDialogues: ["전화가 시끄럽게 울린다.", "전화를 받지 않고 있으니 그만큼의 부재 메시지가 쌓인다.", "자신을 애타게 찾는 딱딱한 어투의 반복적인 메시지.", "발신인은 늘 방문하던 병원.", "......."], clearDialogues: ["눈앞이 점점 흐릿해진다.", "딛고 있는 땅 밑이 훅 꺼지는 것만 같은 착각이 든다.", "그러면서도 걷고 있다는 감각이 점점 사라진다.", "...마론이 죽었다.", "너무나도 쉽게.", "무엇을 해야 하는지 전혀 모르겠다.", "...해야 하는 건가?", "무엇을?", "......나는 무엇을 해야 하지?", "앞으로 어떻게 살아가야....", "마......", "이름을 부르기 직전 시야가 뒤집힌다.", "사방이 깜깜해진다."] },
             { id: 6, dday: "D-16", title: "D-16 | 너도밤나무숲", bgm: AUDIO_ASSETS.BGM_SCENE_6, subScenes: [{ id: 0, name: "세레비 사당", bg: "https://i.ibb.co/qMLqc4hr/image.jpg" }], initialDialogues: ["빽빽한 나무를 헤치고, 좁은 길을 계속하여 나아간다.", "걸음의 폭도, 길의 방향도 몸에 새겨진 듯 자연스럽게 움직인다.", "한 곳을 향해."], clearDialogues: ["빛이 번쩍인다.", "자연스럽게 눈을 감는다."] },
             { id: 7, dday: "D-16", title: "D-16 | 히스이지방", bgm: AUDIO_ASSETS.BGM_SCENE_7, subScenes: [{ id: 0, name: "무덤", bg: "https://i.ibb.co/GQNMVP82/image.png" }, { id: 1, name: "축제", bg: "https://i.ibb.co/HLYVVPvr/image.png" }, { id: 2, name: "축제 거리", bg: "https://i.ibb.co/q8BPpqt/image.png" }], initialDialogues: ["낯설지 않은 과거의 장소.", "'소우'로서의 삶을 살아갈 수 있게 해준 시작점.", "있을 곳을 잃어버린 지금, 당연하게도 그 다음을 떠올린다면 히스이다.", "분명한 이방인.", "그러나 좋아하는 것들이 많이 존재하는...", "그렇다면 내가 있을 곳이 되어줄 수 있지 않을까."], clearDialogues: [".......변하지 않는 것.", "애당초 영원이라는 것은 존재하지 않는 개념이었을지도 모른다.", "영원을 믿었다.", "그러므로 이 장소 또한 좋아하는 것이 되었다.", "그가 영원하리라는 것을 이곳에서 느낀 것과 다름없으니까.", "하지만....", "이제는.", "그것이 틀렸다는 것을 증명하기만 할 뿐인 장소.", "머리가 어지럽다.", "이곳에 있고 싶지 않게 된다.", "있고 싶지 않다.", "...나는 돌아가야만 해."] },
             { id: 8, dday: "D-7", title: "D-7 | 연두마을", bgm: AUDIO_ASSETS.BGM_SCENE_8, subScenes: [{ id: 0, name: "침실", bg: "https://i.ibb.co/Y44ybbWc/image.jpg" }], initialDialogues: ["히스이에 다녀온 뒤로 며칠이 지났다.", "아주 먼 옛날 이야기가 된 것 같다.", "무엇을 해야 할 지 몰라 며칠을 그저 흘려보냈다.", "포켓몬의 소리조차 사라진 집은 고요하다."], clearDialogues: ["...점점 졸음이 몰려온다.", "아무것도 하지 않았지만, 그저 눈을 뜨고 숨을 쉬는 것만으로도 피로하다.", "...살아가고자 하게 되는 행위에 피로를 느낀다면 이제 저는 어떻게 해야 좋은 걸까.", "무엇을 선택해야 하는 걸까.", "저는...."] },
             { id: 9, dday: "D-3", title: "D-3 | 연두마을", bgm: AUDIO_ASSETS.BGM_SCENE_8, subScenes: [{ id: 0, name: "침실", bg: "https://i.ibb.co/Y44ybbWc/image.jpg" }], initialDialogues: [".......", "깨진 몬스터볼의 잔해를 바라본다.", ".......", "아무런 생각이 들지 않는다."], clearDialogues: ["휴대폰을 떨어뜨렸다.", "힘이 빠져서 미끄러져내린 것에 가깝다.", "다시 몬스터볼의 잔해를 바라보면 문득, 언젠가의 리그에서 생각했던 '필요'에 대해 생각하게 된다.", "리그에 있을 필요를 느끼지 못해 그 자리를 버렸다.", "히스이에 있을 필요를 느끼지 못해 그곳을 떠났다.", "이 집도.", "내일을 살아가는 것도.", "딱히 필요하지 않다는 생각이 들지만.", "그렇지만, 너의 옆에 있을 필요는 충분히 차고 넘친다.", "그렇다면....", "......."] },
-            { id: 10, dday: "D-0", title: "D-0 | ???", bgm: AUDIO_ASSETS.BGM_SCENE_9, subScenes: [{ id: 0, name: "???", bg: "https://i.ibb.co/s9C00MJY/image.png" }], initialDialogues: [".......", "꿈을 꿨다.", "꾼 것 같다.", "살아온 그 시간들이 제게 있어서는 나비의 꿈이었을지도 모른다.", "모든 것이 영원하지 않고, 또 덧없다는 것을 알게 되었다.", "하지만, 언젠가 변하게 된다 하더라도 아직 변하지 않은 것은.", "필요."], clearDialogues: ["너의 옆에 있을 필요.", "지금의 나에게 네가 필요하듯이.", "아직 우리가 파트너라는 이름으로 묶여있으므로, 변하지 않았기 때문에.", "너에게도 내가 필요할 것이다.", "서로가 필요하다면, 당연하게 내게 남은 선택지는.", "...마론.", "그를 만나는 것.", "그뿐이다."] }
+            { id: 10, dday: "D-0", title: "D-0 | ???", bgm: AUDIO_ASSETS.BGM_SCENE_9, subScenes: [{ id: 0, name: "???", bg: "https://i.ibb.co/s9C00MJY/image.png" }], initialDialogues: [".......", "꿈을 꿨다.", "꿈을 꾼 것 같다.", "살아온 그 시간들이 제게 있어서는 나비의 꿈이었을지도 모른다.", "모든 것이 영원하지 않고, 또 덧없다는 것을 알게 되었다.", "하지만, 언젠가 변하게 된다 하더라도 아직 변하지 않은 것은.", "필요."], clearDialogues: ["너의 옆에 있을 필요.", "지금의 나에게 네가 필요하듯이.", "아직 우리가 파트너라는 이름으로 묶여있으므로, 변하지 않았기 때문에.", "너에게도 내가 필요할 것이다.", "서로가 필요하다면, 당연하게 내게 남은 선택지는.", "...마론.", "그를 만나는 것.", "그뿐이다."] }
         ];
 
         const MAP_CONFIG = {
@@ -460,6 +470,19 @@
                     };
                     playEndingBgm();
                 } 
+                else if (gameState === 'CREDITS' && bgmRef.current) {
+                    const playCreditsBgm = async () => {
+                        try {
+                            if (isMuted) { bgmRef.current.pause(); return; }
+                            if (bgmRef.current.src !== AUDIO_ASSETS.BGM_CREDITS) {
+                                bgmRef.current.src = AUDIO_ASSETS.BGM_CREDITS;
+                                bgmRef.current.load();
+                            }
+                            await bgmRef.current.play();
+                        } catch (err) {}
+                    };
+                    playCreditsBgm();
+                }
                 else if (bgmRef.current && (gameState === 'POST_SCENE10' || gameState === 'EPILOGUE')) {
                     bgmRef.current.pause();
                 }
@@ -483,7 +506,7 @@
                     if (gameState === 'HIDDEN') {
                         setGameState('FINAL_LOVE');
                     } else if (gameState === 'FINAL_LOVE') {
-                        window.location.reload();
+                        setGameState('CREDITS');
                     } else if (itemAfterDialogue) { 
                         playPaperSfx(); setSelectedItem(itemAfterDialogue);
                         if (!foundItems.includes(itemAfterDialogue.id)) { setFoundItems([...foundItems, itemAfterDialogue.id]); }
@@ -789,9 +812,68 @@
                                         className="w-full h-auto object-contain p-4 fade-in-final cursor-pointer" 
                                         onClick={() => { setGameState('END'); }}
                                     />
-                                    <p className="mt-4 text-[10px] text-zinc-600 uppercase tracking-widest">click image to continue</p>
                                 </div>
                             )}
+                        </div>
+                    )}
+
+                    {/* --- Ending Credits Screen --- */}
+                    {gameState === 'CREDITS' && (
+                        <div className="fixed inset-0 z-[150] bg-black flex items-center justify-center overflow-hidden">
+                            <div 
+                                className="credits-scroll flex flex-col items-center text-center space-y-16 py-20 w-full"
+                                onAnimationEnd={() => window.location.reload()}
+                            >
+                                {/* 로고 */}
+                                <div className="w-64 h-64 flex items-center justify-center mb-10">
+                                    <img src="https://i.ibb.co/RMtKYb0/image.png" alt="Credits Logo" className="w-full h-full object-contain" />
+                                </div>
+
+                                {/* 제목 및 부제 */}
+                                <div className="space-y-4">
+                                    <h1 className="text-2xl font-bold tracking-[0.3em]">30일의 공백으로부터</h1>
+                                    <p className="text-zinc-400 text-sm tracking-widest">축복의 수몰까지 앞으로 ■■</p>
+                                </div>
+
+                                {/* 캐스트 */}
+                                <div className="space-y-6">
+                                    <h2 className="text-zinc-500 uppercase text-xs tracking-[0.4em]">Cast</h2>
+                                    <p className="text-lg">SOU</p>
+                                    <p className="text-lg">■■</p>
+                                </div>
+
+                                {/* 기념 문구 */}
+                                <div className="py-10">
+                                    <p className="text-white/80 tracking-[0.2em] text-sm">SOMA 300 DAYS ANNIVERSARY</p>
+                                </div>
+
+                                {/* 감독 */}
+                                <div className="space-y-4">
+                                    <h2 className="text-zinc-500 uppercase text-xs tracking-[0.4em]">Director</h2>
+                                    <p className="text-lg">산사</p>
+                                </div>
+
+                                {/* 음악 정보 */}
+                                <div className="space-y-8 pb-32">
+                                    <div className="space-y-2">
+                                        <h2 className="text-zinc-500 uppercase text-xs tracking-[0.4em]">Credit BGM</h2>
+                                        <p className="text-sm">Kail Piano / 月を見ていた</p>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <h2 className="text-zinc-500 uppercase text-xs tracking-[0.4em]">Scene BGM</h2>
+                                        <div className="grid grid-cols-1 gap-2 text-sm text-zinc-300">
+                                            <p>Lee Jaerhyang</p>
+                                            <p>Peter Gundry</p>
+                                            <p>Leahara</p>
+                                            <p>Niwamori Piano</p>
+                                            <p>Shiki</p>
+                                            <p>Reynah</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="h-40"></div>
+                            </div>
                         </div>
                     )}
                 </div>
